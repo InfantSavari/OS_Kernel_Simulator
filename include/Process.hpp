@@ -29,8 +29,9 @@ class Process {
         this->execution_time = execution_time;
         this->currentState = ProcessState::New;
         this->arrivalTime = at;
-        // this->remainingTime = rt;
+        this->remainingTime = execution_time;
         this->priority = prior;
+        this->currentState = ProcessState::New;
     }
     
     void displayInfo(){
