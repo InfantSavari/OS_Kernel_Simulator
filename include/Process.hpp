@@ -24,18 +24,22 @@ class Process {
     int startTime, completionTime, waitingTime, turnaroundTime;
     bool completed;
 
-    Process(int pid, int at,int execution_time,int rt,int prior){
+    Process(int pid, int at,int execution_time,int prior){
         this->pid = pid;
         this->execution_time = execution_time;
         this->currentState = ProcessState::New;
         this->arrivalTime = at;
-        this->remainingTime = rt;
+        // this->remainingTime = rt;
         this->priority = prior;
     }
     
     void displayInfo(){
-        cout<<"Process ID: "<<pid<<" | Completed at : "<<completionTime<<endl;
+        cout<<"Process ID: "<<pid<<" | Arrival Time : "<<arrivalTime<<" | Burst Time: "<<execution_time<<" | priority: "<<priority<<endl;
     }
+    void execute(){
+        cout<<"Process "<<pid<<"completed at "<<completionTime<<endl; 
+    }
+
 };
 
 #endif
