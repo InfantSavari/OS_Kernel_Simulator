@@ -48,8 +48,8 @@ public:
     };
     static string timeToString(time_t timeValue) {
         std::ostringstream oss;
-        std::tm* timeInfo = std::localtime(&timeValue); // Convert time_t to tm structure
-        oss << std::put_time(timeInfo, "%Y-%m-%d %H:%M:%S"); // Format: YYYY-MM-DD HH:MM:SS
+        std::tm* timeInfo = std::localtime(&timeValue);
+        oss << std::put_time(timeInfo, "%Y-%m-%d %H:%M:%S");
         return oss.str();
     }
     void writeMessage(){
