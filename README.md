@@ -45,13 +45,11 @@ Select an option by entering the corresponding number and follow the prompts.
 ## Code Structure
 ```
 ├── src
-│   ├── main.cpp                  # Main entry point
-│   ├── Process.cpp                # Process management logic
+│   ├── main.cpp                  # Main entry point  
 │   ├── Process.h                  # Process class header
-│   ├── ResourceAllocationTable.cpp # Resource allocation logic
 │   ├── ResourceAllocationTable.h   # Resource allocation header
-│   ├── Scheduler.cpp               # Scheduling algorithms
 │   ├── Scheduler.h                 # Scheduler class header
+|   ├── IPC.h                       # inter process communication header
 │   └── MemoryManager.cpp           # Memory management logic
 ├── README.md
 ├── Makefile (if using Make)
