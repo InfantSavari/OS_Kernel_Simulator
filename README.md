@@ -24,7 +24,7 @@ The OS Kernel Simulator is a command-line tool designed to simulate basic kernel
    ```
 2. Compile the code using g++:
    ```sh
-   g++ -o kernel_simulator main.cpp Process.cpp ResourceAllocationTable.cpp -std=c++11
+   g++ -o kernel_simulator main.cpp
    ```
 3. Run the executable:
    ```sh
