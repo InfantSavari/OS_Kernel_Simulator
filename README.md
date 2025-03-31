@@ -1,5 +1,5 @@
 # OS_Kernel_Simulator
-# OS Kernel Simulator
+
 
 ## Overview
 The OS Kernel Simulator is a command-line tool designed to simulate basic kernel functionalities, including process management, resource allocation, scheduling, and memory management. The simulator provides an interactive menu for users to create processes, allocate resources, and monitor system behavior.
