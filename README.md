@@ -19,7 +19,7 @@ The OS Kernel Simulator is a command-line tool designed to simulate basic kernel
 ### Build and Run
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/os-kernel-simulator.git
+   git clone https://github.com/InfantSavari/OS_Kernel_Simulator
    cd os-kernel-simulator
    ```
 2. Compile the code using g++:
