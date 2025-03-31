@@ -45,7 +45,7 @@ void fcfs(vector<Process> process,ResourceAllocationTable &rat, IPC &ipc){
     cout<<"Average Turnaround time: "<<avg_tat/process.size()<<" | Average waiting time: "<<avg_wt/process.size()<<endl;
 };
 
-void priorityScheduling(vector<Process>& processes, ResourceAllocationTable &rat, IPC &ipc) {
+void priorityScheduling(vector<Process> &processes, ResourceAllocationTable &rat, IPC &ipc) {
     
     cout<<"\n       Priority Scheduling        \n"<<endl;
     sort(processes.begin(), processes.end(), [](const Process& a, const Process& b) {
@@ -57,20 +57,20 @@ void priorityScheduling(vector<Process>& processes, ResourceAllocationTable &rat
     int time = 0;
 
     for (auto& p : processes) {
-        p.state = ProcessState::READY;
+        p.currentState = ProcessState::READY;
 
         if (time < p.arrivalTime) {
             time = p.arrivalTime;
         }
         ipc.writeMessage();
-        p.state = ProcessState::RUNNING;
+        p.currentState = ProcessState::RUNNING;
         cout << "[Process " << p.pid << "] Running...\n";
-        this_thread::sleep_for(chrono::milliseconds(p.executionTime));
-        p.completionTime = time + p.executionTime;
-        time += p.executionTime;
+        this_thread::sleep_for(chrono::milliseconds(p.execution_time));
+        p.completionTime = time + p.execution_time;
+        time += p.execution_time;
         p.turnaroundTime = p.completionTime - p.arrivalTime;
-        p.waitingTime = p.turnaroundTime - p.executionTime;
-        p.state = ProcessState::TERMINATED;
+        p.waitingTime = p.turnaroundTime - p.execution_time;
+        p.currentState = ProcessState::TERMINATED;
         ipc.readMessage();
         rat.release_resources(p.pid);
         sleep(p.execution_time);
@@ -78,7 +78,7 @@ void priorityScheduling(vector<Process>& processes, ResourceAllocationTable &rat
     }
 };
 
-void shortestJobFirst(vector<Process>& process,ResourceAllocationTable &rat;) {
+void shortestJobFirst(vector<Process>& process,ResourceAllocationTable &rat, IPC &ipc) {
     int n = process.size();
     int completed = 0, time = 0, minIndex = -1;
     bool found;
@@ -100,7 +100,7 @@ void shortestJobFirst(vector<Process>& process,ResourceAllocationTable &rat;) {
             continue;
         }
         ipc.writeMessage();
-        process[minIndex].state = ProcessState::RUNNING;
+        process[minIndex].currentState = ProcessState::RUNNING;
         this_thread::sleep_for(chrono::milliseconds(1));
         process[minIndex].remainingTime--;
         time++;
@@ -109,18 +109,18 @@ void shortestJobFirst(vector<Process>& process,ResourceAllocationTable &rat;) {
             completed++;
             process[minIndex].completionTime = time;
             process[minIndex].turnaroundTime = process[minIndex].completionTime - process[minIndex].arrivalTime;
-            process[minIndex].waitingTime = process[minIndex].turnaroundTime - process[minIndex].executionTime;
+            process[minIndex].waitingTime = process[minIndex].turnaroundTime - process[minIndex].execution_time;
             rat.release_resources(process[minIndex].pid);
             cout << "[Process " << process[minIndex].pid<< "] Running...\n";
-            sleep(prcess[minIndex].execution_time);
+            sleep(process[minIndex].execution_time);
             ipc.readMessage();
             cout << "[Process " << process[minIndex].pid << "] Completed at " << process[minIndex].completionTime << "\n";
-            process[minIndex].state = ProcessState::TERMINATED;
+            process[minIndex].currentState = ProcessState::TERMINATED;
         }
     }
 };
 
-void roundRobin(vector<Process>& processes, int quantum,ResourceAllocationTable &rat) {
+void roundRobin(vector<Process>& processes, int quantum,ResourceAllocationTable &rat, IPC &ipc) {
     cout << "\n Round Robin Scheduling (Quantum = " << quantum << "ms)\n";
 
     int n = processes.size();
@@ -140,7 +140,7 @@ void roundRobin(vector<Process>& processes, int quantum,ResourceAllocationTable 
         q.pop();
         inQueue[index] = false;
         ipc.writeMessage();
-        processes[index].state = ProcessState::RUNNING;
+        processes[index].currentState = ProcessState::RUNNING;
         int execTime = min(quantum, processes[index].remainingTime);
         time += execTime;
         processes[index].remainingTime -= execTime;
@@ -155,18 +155,18 @@ void roundRobin(vector<Process>& processes, int quantum,ResourceAllocationTable 
         if (processes[index].remainingTime > 0) {
             q.push(index);
             inQueue[index] = true;
-            processes[index].state = ProcessState::READY;
+            processes[index].currentState = ProcessState::READY;
         } else {
             completed++;
             processes[index].completionTime = time;
             processes[index].turnaroundTime = processes[index].completionTime - processes[index].arrivalTime;
-            processes[index].waitingTime = processes[index].turnaroundTime - processes[index].executionTime;
+            processes[index].waitingTime = processes[index].turnaroundTime - processes[index].execution_time;
             rat.release_resources(processes[index].pid);
-            cout << "[Process " << process[index].pid<< "] Running...\n";
-            sleep(prcess[index].execution_time);
+            cout << "[Process " << processes[index].pid<< "] Running...\n";
+            sleep(processes[index].execution_time);
             ipc.readMessage();
-            cout << "[Process " << process[index].pid << "] Completed at " << process[index].completionTime << "\n";
-            processes[index].state = ProcessState::TERMINATED;
+            cout << "[Process " << processes[index].pid << "] Completed at " << processes[index].completionTime << "\n";
+            processes[index].currentState = ProcessState::TERMINATED;
         }
     }
 };
@@ -177,39 +177,39 @@ void printResults(vector<Process>& processes) {
     
     for (auto& p : processes) {
         cout << "[Process " << p.pid << "] Running...\n";
-        sleep(prcess[i].execution_time);
+        sleep(p.execution_time);
         cout << "[Process " << p.pid << "] Completed at " << p.completionTime << "\n";
-        avgWaiting += p.waiting;
-        avgTurnaround += p.turnaround;
+        avgWaiting += p.waitingTime;
+        avgTurnaround += p.turnaroundTime;
     }
     cout << "\nAverage Waiting Time: " << avgWaiting / processes.size() << " ms";
     cout << "\nAverage Turnaround Time: " << avgTurnaround / processes.size() << " ms\n";
 };
 
-class MultiLevelQueueScheduler {
-    private:
-        queue<Process> highPriorityQueue;
-        queue<Process> midPriorityQueue;
-        queue<Process> lowPriorityQueue;
+// class MultiLevelQueueScheduler {
+//     private:
+//         queue<Process> highPriorityQueue;
+//         queue<Process> midPriorityQueue;
+//         queue<Process> lowPriorityQueue;
     
-    public:
-        void addProcess(const Process& process) {
-            if (process.priority <= 3)
-                highPriorityQueue.push(process);
-            else if (process.priority <= 6)
-                midPriorityQueue.push(process);
-            else
-                lowPriorityQueue.push(process);
-        }
+//     public:
+//         void addProcess(const Process& process) {
+//             if (process.priority <= 3)
+//                 highPriorityQueue.push(process);
+//             else if (process.priority <= 6)
+//                 midPriorityQueue.push(process);
+//             else
+//                 lowPriorityQueue.push(process);
+//         }
     
-        void executeProcesses() {
-            fcfs(highPriorityQueue);
-            printResults(highPriorityQueue);
-            roundRobin(midPriorityQueue,2);
-            printResults(midPriorityQueue);
-            priorityScheduling(lowPriorityQueue);
+//         void executeProcesses() {
+//             fcfs(highPriorityQueue);
+//             printResults(highPriorityQueue);
+//             roundRobin(midPriorityQueue,2);
+//             printResults(midPriorityQueue);
+//             priorityScheduling(lowPriorityQueue);
 
-        }    
-};
+//         }    
+// };
 
 #endif

@@ -9,11 +9,11 @@
 using namespace std;
 
 enum class ProcessState{
-    New,
-    Ready,
-    Running,
-    BLocked,
-    Terminated
+    NEW,
+    READY,
+    RUNNING,
+    BLOCKED,
+    TERMINATED
 };
 
 
@@ -32,10 +32,10 @@ class Process {
     Process(int pid, int at,int execution_time){
         this->pid = pid;
         this->execution_time = execution_time;
-        this->currentState = ProcessState::New;
+        this->currentState = ProcessState::NEW;
         this->arrivalTime = at;
         this->remainingTime = execution_time;
-        this->type=type;
+        
  
         
         max_wait_time = 100;
