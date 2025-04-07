@@ -30,7 +30,7 @@ void fcfs(vector<Process> process,ResourceAllocationTable &rat, IPC &ipc){
             this_thread::sleep_for(chrono::milliseconds((p.arrivalTime-time)*100));
             time = p.arrivalTime;
         }
-        ipc.writeMessage();
+        ipc.writeMessage(p.pid);
         p.startTime = time;
         time += p.execution_time;
         p.completionTime = time;
@@ -39,7 +39,7 @@ void fcfs(vector<Process> process,ResourceAllocationTable &rat, IPC &ipc){
         p.waitingTime = p.turnaroundTime - p.execution_time;
         avg_tat += p.turnaroundTime;
         avg_wt += p.waitingTime;
-        rat.release_resources(p.pid);
+        // rat.release_resources(p.pid);
         ipc.readMessage();
     }
     cout<<"Average Turnaround time: "<<avg_tat/process.size()<<" | Average waiting time: "<<avg_wt/process.size()<<endl;
@@ -62,7 +62,7 @@ void priorityScheduling(vector<Process> &processes, ResourceAllocationTable &rat
         if (time < p.arrivalTime) {
             time = p.arrivalTime;
         }
-        ipc.writeMessage();
+        ipc.writeMessage(p.pid);
         p.currentState = ProcessState::RUNNING;
         cout << "[Process " << p.pid << "] Running...\n";
         this_thread::sleep_for(chrono::milliseconds(p.execution_time));
@@ -72,7 +72,7 @@ void priorityScheduling(vector<Process> &processes, ResourceAllocationTable &rat
         p.waitingTime = p.turnaroundTime - p.execution_time;
         p.currentState = ProcessState::TERMINATED;
         ipc.readMessage();
-        rat.release_resources(p.pid);
+        // rat.release_resources(p.pid);
         sleep(p.execution_time);
         cout << "[Process " << p.pid << "] Completed at " << p.completionTime << "\n";
     }
@@ -99,7 +99,7 @@ void shortestJobFirst(vector<Process>& process,ResourceAllocationTable &rat, IPC
             time++;
             continue;
         }
-        ipc.writeMessage();
+        ipc.writeMessage(process[minIndex].pid);
         process[minIndex].currentState = ProcessState::RUNNING;
         this_thread::sleep_for(chrono::milliseconds(1));
         process[minIndex].remainingTime--;
@@ -110,7 +110,7 @@ void shortestJobFirst(vector<Process>& process,ResourceAllocationTable &rat, IPC
             process[minIndex].completionTime = time;
             process[minIndex].turnaroundTime = process[minIndex].completionTime - process[minIndex].arrivalTime;
             process[minIndex].waitingTime = process[minIndex].turnaroundTime - process[minIndex].execution_time;
-            rat.release_resources(process[minIndex].pid);
+            // rat.release_resources(process[minIndex].pid);
             cout << "[Process " << process[minIndex].pid<< "] Running...\n";
             sleep(process[minIndex].execution_time);
             ipc.readMessage();
@@ -139,7 +139,7 @@ void roundRobin(vector<Process>& processes, int quantum,ResourceAllocationTable 
         int index = q.front();
         q.pop();
         inQueue[index] = false;
-        ipc.writeMessage();
+        ipc.writeMessage(processes[index].pid);
         processes[index].currentState = ProcessState::RUNNING;
         int execTime = min(quantum, processes[index].remainingTime);
         time += execTime;
@@ -161,7 +161,7 @@ void roundRobin(vector<Process>& processes, int quantum,ResourceAllocationTable 
             processes[index].completionTime = time;
             processes[index].turnaroundTime = processes[index].completionTime - processes[index].arrivalTime;
             processes[index].waitingTime = processes[index].turnaroundTime - processes[index].execution_time;
-            rat.release_resources(processes[index].pid);
+            // rat.release_resources(processes[index].pid);
             cout << "[Process " << processes[index].pid<< "] Running...\n";
             sleep(processes[index].execution_time);
             ipc.readMessage();

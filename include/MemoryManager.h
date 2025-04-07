@@ -29,19 +29,17 @@ private:
     int problem_id;
 
 public:
-    ResourceAllocationTable(int num_processes) {
-        processes = num_processes;
+    ResourceAllocationTable() {
+        //processes = num_processes;
         total_resources = {8, 8, 8};  
         available = total_resources;
     }
 
     void set_max_demand(int process_id, vector<int> max_demand) {
-        if (process_id < 0 || process_id >= processes) {
-            cerr << "Invalid process ID\n";
-            return;
-        }
+        
         max_need[process_id] = max_demand;
-        allocated[process_id] = vector<int>(resources, 0);
+        vector<int> temp(resources, 0);
+        allocated[process_id] = temp;
     }
 
     bool is_safe_state(int process_id, vector<int> request) {
@@ -90,10 +88,7 @@ public:
     bool request_resources(int process_id, vector<int> request) {
         lock_guard<mutex> lock(table_mutex);
 
-        if (process_id < 0 || process_id >= processes) {
-            cerr << "Invalid process ID\n";
-            return false;
-        }
+        
 
         for (int i = 0; i < resources; i++) {
             if (request[i] > max_need[process_id][i]) {
